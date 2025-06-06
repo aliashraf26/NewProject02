@@ -1,0 +1,179 @@
+﻿@page "/Admin"
+@layout MainLayout
+
+@attribute [Authorize]
+
+@inject AuthenticationStateProvider AuthProvider
+@inject ISnackbar _ISnakbar
+@inject NavigationManager Nav
+@inject IDialogService DialogService
+
+<PageTitle>Users</PageTitle>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <h3 class="ml-2">Manage Users</h3>
+                <div class="d-flex">
+                    <button class="btn btn-success btn-sm ms-3" style="align-content: center"
+                            @onclick="@(() => { isAdd = true; user = new(); title = "Add User"; Saved(); })">
+                        Add New User
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <MudDataGrid @ref="DataGrid" Items="@userModel" Loading="@IsLoading" SortMode="SortMode.Multiple" Filterable="true" FilterMode="DataGridFilterMode.Simple" Dense="true" Bordered="true" Breakpoint="Breakpoint.Sm">
+                    <Columns>
+                        @* <PropertyColumn Property="x => x.Id" Title="Id" Sortable="true" Filterable="false" /> *@
+                        <PropertyColumn Property="x => x.FullName" Title="Name" />
+                        <PropertyColumn Property="x => x.UserName" Title="UserName" />
+                        <PropertyColumn Property="x => x.Phone" Title="MobileNo" />
+                        <TemplateColumn Title="Status">
+                            <CellTemplate>
+                                @if (context.Item.IsActive)
+                                {
+                                    <span>Active</span>
+                                }
+                                else
+                                {
+                                    <span>Un-Active</span>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+
+                        <TemplateColumn Title="Actions">
+                            <CellTemplate>
+                                @if (context.Item != null)
+                                {
+                                    <MudIconButton OnClick="@(() => { isAdd = false; user = context.Item; title = "Edit User"; Saved(); })"
+                                                   Size="Size.Small" Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" />
+                                }
+                            </CellTemplate>
+
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager />
+                    </PagerContent>
+                </MudDataGrid>
+
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+    bool isAdd;
+    string title = "";
+    UserViewModel user = new();
+    int LoginedUserId = 0;
+
+    MudDataGrid<UserViewModel> DataGrid = new();
+
+    List<UserViewModel> userModel = new();
+
+    bool IsLoading = true;
+    protected override async Task OnInitializedAsync()
+    {
+        var userService = (AuthService)AuthProvider;
+        var user = (await AuthStat).User;
+        if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var nameClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            LoginedUserId = Convert.ToInt32(nameClaim?.Value ?? "0");
+        }
+        await RefreshData();
+    }
+
+    private void NavigateToAddUser()
+    {
+        Nav.NavigateTo("/AddUser");
+    }
+
+    private void NavigateToEditUser(long userId)
+    {
+        // Redirect to the edit user page, passing the userId as a route parameter
+        Nav.NavigateTo($"/EditUser/{userId}");
+    }
+
+    private async Task RefreshData()
+    {
+        userModel = new List<UserViewModel>();
+
+        var userService = (AuthService)AuthProvider;
+        // var depart = await userService.GetAllUsers();
+
+        // try
+        // {
+        //     if (depart != null && depart.Count > 0)
+        //     {
+        //         userModel = depart;
+
+        //     }
+        //     IsLoading = false;
+        // }
+        // catch
+        // {
+
+        // }
+
+    }
+
+    async void Saved()
+    {
+        var parameters = new DialogParameters<EditUser> { { x => x.viewModel, user } };
+
+        var dialog = await DialogService.ShowAsync<EditUser>(title, parameters);
+
+        var res = await dialog.Result;
+
+        if (!res.Canceled)
+        {
+            user = (UserViewModel)res.Data;
+
+            var userService = (AuthService)AuthProvider;
+            if (LoginedUserId > 0)
+            {
+
+                // if (isAdd)
+                // {
+                //     user.CreatedBy = LoginedUserId;
+                //     user.DateCreated = DateTime.Now;
+
+                //     await userService.Register(user);
+
+                //     await RefreshData();
+                //     StateHasChanged();
+                // }
+                // else
+                // {
+                //     user.UpdatedBy = LoginedUserId;
+                //     user.DateUpdated = DateTime.Now;
+
+                //     await userService.UpdateUser(user);
+
+                //     await RefreshData();
+                //     StateHasChanged();
+                // }
+            }
+
+            // var depart = await userService.GetAllUsers();
+
+            // try
+            // {
+            //     if (depart != null && depart.Count > 0)
+            //     {
+            //         userModel = depart;
+
+            //     }
+            //     IsLoading = false;
+            // }
+            // catch
+            // {
+
+            // }
+        }
+    }
+}

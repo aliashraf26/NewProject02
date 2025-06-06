@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VisualTimeTracking.BLL\VisualTimeTracking.BLL.csproj" />
+    <ProjectReference Include="..\VisualTimeTracking.Common\VisualTimeTracking.Common.csproj" />
+    <ProjectReference Include="..\VisualTimeTracking.UI\VisualTimeTracking.UI.csproj" />
+  </ItemGroup>
+
+</Project>

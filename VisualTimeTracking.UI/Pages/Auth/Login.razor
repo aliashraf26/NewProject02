@@ -1,0 +1,234 @@
+﻿@page "/Login"
+
+@layout AuthLayout
+@inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthProvider
+@inject IJSRuntime JS
+
+<div>
+    <div class="container-fluid" data-global-resource-path="Visual Approval Theme 2023/templates/partials/header.html">
+        <header class="header">
+            <div id="hs_cos_wrapper_module_16908077781088" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module">
+                <div class="header-group fix-header" style="position: relative;">
+                    <div class="header-section" style="background: #ffe7c6">
+                        <div class="content-wrapper">
+                            <div class="row-fluid">
+                                <div class="logo" style="padding:15px 0px 17px 4px">
+                                    <a href="~/Home/Index">
+                                        <img src="https://325503.fs1.hubspotusercontent-na1.net/hubfs/325503/Visual%20Approvals/Group%20483%20(1).svg" alt="Visual Approvals" loading="lazy" style="max-width: 100%; height: auto;">
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </header>
+    </div>
+    <div class="container-fluid" style="height: 100%;">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-3 col-lg-3 p-3">
+                <div class="text-center py-2">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <h3 class="pt-2"><b>Visual Time Tracking</b></h3>
+                        
+                    </div>
+                </div>
+                <div class="card" style="background-color: rgba(255, 255, 255, 0.5)">
+                    <div class="card-body">
+                        <EditForm Model="login" OnValidSubmit="Submit">
+                            <DataAnnotationsValidator />
+                            <div class="mb-3 row">
+                                <label class="form-label col-xl-4">Username</label>
+                                <div class="col-xl-8">
+                                    <InputText id="username" @bind-Value="login.Username" class="form-control" />
+                                    <ValidationMessage For="@(() => login.Username)" />
+                                </div>
+                            </div>
+                            @if (isEmailVerified)
+                            {
+                                <div class="mb-3 row">
+                                    <label class="form-label col-xl-4">Password</label>
+                                    <div class="col-xl-8">
+                                        <InputText id="password" type="password" @bind-Value="login.Password" class="form-control" />
+                                        @*  <ValidationMessage For="@(() => login.Password)" /> *@
+                                    </div>
+                                </div> 
+                            }
+
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-default" style="background-color: #ffe7c6">@btnName</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:17%" class="setSize container-fluid" data-global-resource-path="Visual Approval Theme 2023/templates/partials/footer.html">
+        <footer class="footer">
+            <div id="hs_cos_wrapper_module_169086434973916" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module">
+
+                                    
+                <div class="footer-cm module_169086434973916">
+                    <div class="content-wrapper">
+                        <div class="row-fluid">
+                            <div class="top-row">
+                                <div class="left-col">
+                                    <img src="https://325503.fs1.hubspotusercontent-na1.net/hubfs/325503/Visual%20Approvals/Group%20483.svg" alt="Group 483" loading="lazy" style="max-width: 100%; height: auto;">
+                                </div>
+                                <div class="right-col">
+                                    <div class="col-1">
+                                        <h4>
+                                            Platform
+                                        </h4>
+                                        <span id="hs_cos_wrapper_module_169086434973916_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_simple_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="simple_menu">
+                                            <div id="hs_menu_wrapper_module_169086434973916_" class="hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" role="navigation" data-sitemap-name="" data-menu-id="" aria-label="Navigation Menu">
+                                                <ul role="menu">
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/product" role="menuitem" target="_self">Overview</a></li>
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/integrations" role="menuitem" target="_self">Integrations</a></li>
+                                                </ul>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <div class="col-2">
+                                        <h4>
+                                            About
+                                        </h4>
+                                        <span id="hs_cos_wrapper_module_169086434973916_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_simple_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="simple_menu">
+                                            <div id="hs_menu_wrapper_module_169086434973916_" class="hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" role="navigation" data-sitemap-name="" data-menu-id="" aria-label="Navigation Menu">
+                                                <ul role="menu">
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/pricing" role="menuitem" target="_self">Pricing</a></li>
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/blog" role="menuitem" target="_self">Blog</a></li>
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/about-us" role="menuitem" target="_self">About Us</a></li>
+                                                </ul>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <div class="col-3">
+                                        <h4>
+                                            Support
+                                        </h4>
+                                        <span id="hs_cos_wrapper_module_169086434973916_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_simple_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="simple_menu">
+                                            <div id="hs_menu_wrapper_module_169086434973916_" class="hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" role="navigation" data-sitemap-name="" data-menu-id="" aria-label="Navigation Menu">
+                                                <ul role="menu">
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/support" role="menuitem" target="_self">Support</a></li>
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/faqs" role="menuitem" target="_self">FAQs</a></li>
+                                                </ul>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <div class="col-4">
+                                        <h4>
+                                            Contact Us
+                                        </h4>
+                                        <span id="hs_cos_wrapper_module_169086434973916_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_simple_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="simple_menu">
+                                            <div id="hs_menu_wrapper_module_169086434973916_" class="hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" role="navigation" data-sitemap-name="" data-menu-id="" aria-label="Navigation Menu">
+                                                <ul role="menu">
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/contact-us" role="menuitem" target="_self">Contact</a></li>
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/book-a-demo" role="menuitem" target="_self">Get a Demo</a></li>
+                                                </ul>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bottom-row">
+                                <div class="col-1">
+                                    <ul>
+                                        <li>
+                                            <a href="https://www.facebook.com/visualapprovals/?fref=ts" target="_blank" rel="noopener">
+                                                <img src="https://325503.fs1.hubspotusercontent-na1.net/hubfs/325503/Visual%20Approvals/facebook.svg" alt="facebook" loading="lazy" style="max-width: 100%; height: auto;">
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://twitter.com/visualapprovals" target="_blank" rel="noopener">
+                                                <img src="https://visualapprovals.com.au/hubfs/Visual%20Approvals/facebook%20Copy.svg" alt="facebook Copy" loading="lazy" style="max-width: 100%; height: auto;">
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://www.linkedin.com/company/visual-approvals-pty-ltd/" target="_blank" rel="noopener">
+                                                <img src="https://visualapprovals.com.au/hubfs/Visual%20Approvals/facebook%20Copy%203.svg" alt="facebook Copy 3" loading="lazy" width="25" height="26" style="max-width: 100%; height: auto;">
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                                <div class="col-2">
+                                    <div class="simple-menu">
+                                        <span id="hs_cos_wrapper_module_169086434973916_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_simple_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="simple_menu">
+                                            <div id="hs_menu_wrapper_module_169086434973916_" class="hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" role="navigation" data-sitemap-name="" data-menu-id="" aria-label="Navigation Menu">
+                                                <ul role="menu">
+                                                    <li class="hs-menu-item hs-menu-depth-1" role="none"><a href="https://visualapprovals.com.au/privacy-policy" role="menuitem" target="_self">Privacy Policy</a></li>
+                                                </ul>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <div class="cta-container">
+                                        <a href="https://visualapprovals.com.au/support?hsLang=en-au" class="cta_button">
+                                            Support
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+
+
+@code {
+    LoginViewModel login = new();
+    private bool isEmailVerified = false;
+    private string btnName = "Log In";
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeAsync<object>("hideModal");
+        }
+    }
+
+    async Task Submit()
+    {
+        if(!isEmailVerified)
+        {
+            var userService = (AuthService)AuthProvider;
+            isEmailVerified = await userService.Login(login);
+            if (isEmailVerified)
+            {
+                btnName = "Verify";
+            }
+        }
+        else
+        {
+            var userService = (AuthService)AuthProvider;
+            if (!await userService.LoginVerify(login))
+            {
+                login.Password = "";
+            }
+
+
+        }
+        
+
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var user = (await AuthStat).User;
+        if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            Nav.NavigateTo("/BusinessSummaries");
+        }
+    }
+}

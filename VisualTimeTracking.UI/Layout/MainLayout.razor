@@ -1,0 +1,113 @@
+﻿@inherits LayoutComponentBase
+
+@inject AuthenticationStateProvider AuthProvider
+@inject VisualTimeTracking.UI.Services.ILocalStorageServices _localStorageService
+<PageTitle>Visual Approvals</PageTitle>
+
+<MudLayout>
+    <MudAppBar Elevation="2" Style="background-color: #ffe7c6">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        
+        <MudSpacer /> 
+        <MudText Typo="Typo.subtitle2">@username</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Error" Edge="Edge.End" OnClick="@(async (e) => await LogOut())" />
+        <MudToggleIconButton @bind-Toggled="darkMode"
+                             Icon="@Icons.Material.Filled.LightMode"
+                             Color="@Color.Error"
+                             ToggledIcon="@Icons.Material.Filled.DarkMode"
+                             ToggledColor="@Color.Success"
+                             title="@(darkMode ? "Dark Mode" : "Light Mode")" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
+        <MudNavMenu Style="background-color: #ffe7c6;height: 100%;" Bordered="true">
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h6" Class="ps-3 pt-2">@companyName</MudText>
+            </MudDrawerHeader>
+            <MudDivider Class="my-2" />
+            @if (isLoaded)
+            {
+                @* <MudNavGroup Title="Visual Time Tracking Reports" Icon="@Icons.Material.Filled.DashboardCustomize">
+                    <MudNavLink Icon="@Icons.Material.Filled.Business" Href="/BusinessSummaries">Business Summaries</MudNavLink>
+                    <MudNavLink Icon="@Icons.Material.Filled.SupervisedUserCircle" Href="/EmployeesReport">Employee's Hourly Report</MudNavLink>
+                    <MudNavLink Icon="@Icons.Material.Filled.Business" Href="/EmployeesReport">Report By Building Applications</MudNavLink>
+                    <MudNavLink Icon="@Icons.Material.Filled.Business" Href="/EmployeesReport">Report By Software</MudNavLink>
+                </MudNavGroup> *@
+                <MudNavLink Icon="@Icons.Material.Filled.StackedBarChart" Href="/BusinessSummaries">Business Summaries</MudNavLink>
+                <MudNavLink Icon="@Icons.Material.Filled.PeopleAlt" Href="/EmployeesReport">Employee's Hourly Report</MudNavLink>
+                <MudNavLink Icon="@Icons.Material.Filled.AssuredWorkload" Href="/ReportByBuildingApplications">Report By Building Applications</MudNavLink>
+               @*  <MudNavLink Icon="@Icons.Material.Filled.Apps" Href="/ReportBySoftware">Report By Software</MudNavLink> *@
+
+            }
+            <footer style="position: fixed; bottom: 0; width: 100%; background-color: white; text-align: center; padding: 10px; box-shadow: 0 -1px 5px rgba(0,0,0,0.1);">
+                <h5 style="margin: 0; color: black;">
+                    <b>Powered by Visual Approvals AI – Auto-tracked performance insights.</b>
+                </h5>
+            </footer>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        <div class="m-3">
+            @Body
+        </div>
+    </MudMainContent>
+</MudLayout>
+
+<MudThemeProvider IsDarkMode="darkMode" Theme="theme" />
+
+<MudPopoverProvider />
+<MudDialogProvider CloseButton="true" Position="DialogPosition.Center" />
+<MudSnackbarProvider />
+
+<BlazoredToasts Position="ToastPosition.BottomRight"
+                IconType="IconType.FontAwesome"
+                ShowProgressBar="true"
+                SuccessClass="success-toast-override"
+                SuccessIcon="fas fa-thumbs-up"
+                ErrorIcon="fas fa-bug"
+                Timeout="20" />
+
+@code {
+
+    bool _drawerOpen = true;
+    bool isLoaded;
+    bool darkMode;
+    private string companyName = "Visual Approvals";
+    private string username = "Admin";
+    MudTheme theme = new MudTheme()
+        {
+            PaletteLight = new PaletteLight()
+            {
+                Primary = Colors.Orange.Default,
+                Secondary = Colors.Orange.Default,
+                AppbarBackground = Colors.Orange.Default,
+            },
+            PaletteDark = new PaletteDark()
+            {
+                Primary = Colors.Orange.Default
+            }
+        };
+    protected async override Task OnInitializedAsync()
+    {
+        //companyName = await _localStorageService.GetItem<string>("company");
+        username = await _localStorageService.GetItem<string>("username");
+    }
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task LogOut()
+    {
+        var userService = (AuthService)AuthProvider;
+        await userService.Logout();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isLoaded = true;
+            await Task.Delay(100);
+            StateHasChanged();
+        }
+    }
+}

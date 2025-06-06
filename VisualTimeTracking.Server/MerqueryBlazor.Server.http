@@ -1,0 +1,6 @@
+@VisualTimeTracking.Server_HostAddress = http://localhost:5073
+
+GET {{VisualTimeTracking.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,500 @@
+﻿
+@page "/EmployeesReport"
+
+@layout MainLayout
+@attribute [Authorize]
+@inject TimeTrackingApi api;
+
+<div class="card m-2">
+    <div class="card-header">
+        <h6>Working hours Summery for: </h6>@_value
+    </div>
+    <div class="card-body">
+        <MudGrid Spacing="2" GutterSize="1">
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudSelect @bind-Value="_value"
+                                QuickSearchInterval="TimeSpan.FromSeconds(3)"
+                                Label="Employees" 
+                                Margin="Margin.Dense"
+                                Placeholder="@("Please select")"
+                                HelperText="@("Please select an employee")" 
+                                Clearable="false">
+                                    @foreach (var state in stafflist)
+                                    {
+                                        <MudSelectItem Value="state.DomainName">@state.DisplayName</MudSelectItem>
+                                    }
+                                </MudSelect>
+
+                            }
+                        </MudCardContent>
+
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;"> 
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            { 
+                                <MudStack AlignItems="AlignItems.Start" Style="height:450px">
+                                    <MudDateRangePicker  @ref="_picker" PlaceholderStart="Start Date" PlaceholderEnd="End Date" @bind-DateRange="@_dateRange"  Label="Range" PickerVariant="@PickerVariant.Inline" Margin="Margin.Dense">
+                                        <PickerActions>
+                                            <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.ClearAsync())">Clear</MudButton>
+                                            <MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                                            <MudButton Color="Color.Primary" OnClick="@(() => HandleDateRangeChange())">Ok</MudButton>
+                                        </PickerActions>
+                                    </MudDateRangePicker>
+                                </MudStack>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%;  height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudButton OnClick="@(() => DateThisMonth())" Style="height:100%;width:100%" Variant="Variant.Filled" Color="Color.Success">This Month</MudButton>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;"> 
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudButton OnClick="@(() => DateLastMonth())" Style="height:100%;width:100%" Variant="Variant.Filled" Color="Color.Inherit">Last Month</MudButton>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;"> 
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudButton OnClick="@(() => DateThisWeek())" Style="height:100%;width:100%" Variant="Variant.Filled" Color="Color.Success">This Week</MudButton>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudButton OnClick="@(() => DateLastWeek())" Style="height:100%;width:100%" Variant="Variant.Filled" Color="Color.Tertiary">Last Week</MudButton>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </div>
+    <div class="card-body">
+        <MudGrid Spacing="2" GutterSize="1">
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 160px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Large" Style="color: dodgerblue; margin-bottom: 12px;" />
+                                <MudText Typo="Typo.body2" Style=" color: dodgerblue;" Align="Align.Center" Class="mt-2">Total Work Hours</MudText>
+                                <MudText Typo="Typo.h4" Style=" color: dodgerblue;" Align="Align.Center" Class="mt-1"> <strong>@(Formater.ToNumber(summery.LastWeekSummery.summary.TotalWorkHours))</strong></MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 160px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Style="color: green; margin-bottom: 12px;" Size="Size.Large" />
+                                <MudText Typo="Typo.body2" Style=" color: green;" Align="Align.Center" Class="mt-2">Avg Work Hours</MudText>
+                                <MudText Typo="Typo.h4" Style=" color: green;" Align="Align.Center" Class="mt-1">
+                                    <strong>@(Formater.ToNumber(summery.LastWeekSummery.summary.AvgWorkHoursPerEmployee))</strong>
+                                </MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 160px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.AlignVerticalBottom" Style="color: orange; margin-bottom: 12px;" Size="Size.Large" />
+                                <MudText Typo="Typo.body2" Style=" color: orange;" Align="Align.Center" Class="mt-2">Avg Idle Hours% (Last Week)</MudText>
+                                <MudText Typo="Typo.h4" Style=" color: orange;" Align="Align.Center" Class="mt-1">
+                                    <strong>@(Formater.FormatAsPercentage(summery.LastWeekSummery.summary.AvgIdleHoursPerEmployee))</strong>
+                                </MudText>
+
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 160px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.TimerOff" Style="color: red; margin-bottom: 12px;" Size="Size.Large" />
+                                <MudText Typo="Typo.body2" Style=" color: red;" Align="Align.Center" Class="mt-2">Total Idle Hours</MudText>
+                                <MudText Typo="Typo.h4" Style=" color: red;" Align="Align.Center" Class="mt-1">
+                                    <strong>@(Formater.ToNumber(summery.LastWeekSummery.summary.TotalIdleHours))</strong>
+                                </MudText>
+
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 160px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.SwipeUp" Size="Size.Large" Style="color: cyan; margin-bottom: 12px;" />
+                                <MudText Typo="Typo.body2" Style=" color: cyan;" Align="Align.Center" Class="mt-2">Most Active Day</MudText>
+                                <MudText Typo="Typo.h4" Style=" color: cyan;" Align="Align.Center" Class="mt-1"> <strong>@(summery.LastWeekSummery.summary.MostActiveDay)</strong></MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 160px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.SwipeDown" Style="color: darkorchid; margin-bottom: 12px;" Size="Size.Large" />
+                                <MudText Typo="Typo.body2" Style=" color: darkorchid;" Align="Align.Center" Class="mt-2">Least Active Day</MudText>
+                                <MudText Typo="Typo.h4" Style=" color: darkorchid;" Align="Align.Center" Class="mt-1">
+                                    <strong>@(summery.LastWeekSummery.summary.LeastActiveDay)</strong>
+                                </MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </div>
+    <div class="card-header">
+        <h6>Employee Overview <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong></h6>
+    </div>
+    <div class="card-body">
+        @if (IsLoading)
+        {
+            <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+        }
+        else
+        {
+            <MudDataGrid Items="@summery.LastWeekSummery.employees" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilterE">
+                <ToolBarContent>
+                    <MudSpacer />
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                    AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.UserName" Title="User" />
+                    <PropertyColumn Property="x => Formater.ToNumber(x.WorkHours)" Title="Work Hours" />
+                    <PropertyColumn Property="x => x.MostWorkedSection" Title="Most Worked Section" />
+                    <PropertyColumn Property="x => Formater.ToNumber(x.IdleHours)" Title="Idle Hours" />
+                    <PropertyColumn Property="x => Formater.ToNumber(x.ProductivityPercent)" Title="Productivity" />
+                    <TemplateColumn CellClass="d-flex justify-start" Title="Performance">
+                        <CellTemplate>
+                            <MudStack Row>
+                                <MudRating ReadOnly="true" Size="@Size.Small" SelectedValue="@context.Item.StarsOutOfFive" />
+                                @* <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Success">Full summery</MudButton> *@
+                            </MudStack>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager />
+                </PagerContent>
+            </MudDataGrid>
+        }
+    </div>
+
+    <div class="card-header">
+        <h6>Applications Overview <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong></h6>
+    </div>
+    <div class="card-body">
+        @if (IsLoading)
+        {
+            <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+        }
+        else
+        {
+            <MudDataGrid Items="@summery.LastWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter">
+                <ToolBarContent>
+
+                    <MudSpacer />
+                    <MudTextField @bind-Value="_searchString3" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                    AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.Section" Title="Worked in" />
+                    <PropertyColumn Title="Total Hours" Property="x => Formater.ToNumber(x.TotalHours).ToString(CultureInfo.InvariantCulture)" AggregateDefinition="@_calculatesum" />
+                    <PropertyColumn Title="Work Percentage" Property="x => Formater.FormatAsPercentage(x.WorkPercentage)" />
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager />
+                </PagerContent>
+            </MudDataGrid>
+        }
+    </div>
+
+</div>
+
+
+@code {
+    private MudDateRangePicker _picker;
+    private MyRecord _record;
+    private List<EmpData> stafflist;
+    private DateRange _dateRange { get; set; }
+    private int _index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    private string _width = "100%";
+    private string _height = "500px";
+    private string _searchString;
+    private string _value = "";
+    private string _searchString2;
+    private string _searchString3;
+    private string _searchString4;
+    private bool _sortNameByLength;
+    private ChartOptions _options = new ChartOptions();
+    private List<string> _events = new();
+    bool IsLoading = true;
+    private string[] EmployeeLabels;
+    private List<ChartSeries> EmployeeWorkDataset = new List<ChartSeries>();
+
+    private List<ChartSeries> _series = new List<ChartSeries>();
+
+    private string[] _xAxisLabels;
+    public List<ChartSeries> SeriesDepartment = new();
+    private AxisChartOptions _axisChartOptions = new() { StackedBarWidthRatio = 0.5 };
+
+    private Position _legendPosition = Position.Bottom;
+    public LoadBusinessTimeDataSummery summery = new LoadBusinessTimeDataSummery();
+    public string[] XAxisLabels = [];
+    async void HandleDateRangeChange()
+    {
+        await _picker.CloseAsync();
+        System.Threading.Thread.Sleep(1000);
+        await DateSelected(_dateRange);
+    }
+    private async Task DateSelected(DateRange p_dateRange)
+    {
+         
+        IsLoading = true;
+        StateHasChanged();
+        summery = await api.LoadDataByDateRange(p_dateRange, _value);
+        IsLoading = false;
+    }
+    private async Task DateThisWeek()
+    {
+         
+        IsLoading = true; 
+        summery = await api.LoadDataBySelection(1,_value);
+        IsLoading = false;
+    }
+    private async Task DateLastWeek()
+    {
+         
+        IsLoading = true; 
+        summery = await api.LoadDataBySelection(2,_value);
+        IsLoading = false;
+    }
+    private async Task DateThisMonth()
+    {
+         
+        IsLoading = true; 
+        summery = await api.LoadDataBySelection(3, _value);
+        IsLoading = false;
+    }
+    private async Task DateLastMonth()
+    {
+
+        IsLoading = true;
+        summery = await api.LoadDataBySelection(4, _value);
+        IsLoading = false;
+    }
+    AggregateDefinition<SectionSummary> _calculatesum = new AggregateDefinition<SectionSummary>
+        {
+            Type = AggregateType.Custom,
+            CustomAggregate = x =>
+            {
+                var total = x.Sum(z => z.TotalHours);
+                return $"Total Hours Spent: {Math.Round(total, 2)}";
+            }
+        };
+    private Func<EmployeeSummary, bool> _quickFilterE => x =>
+       {
+           if (string.IsNullOrWhiteSpace(_searchString))
+               return true;
+
+           if (x.MostWorkedSection.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+               return true;
+
+           if (x.UserName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+               return true;
+
+           // if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString))
+           //     return true;
+
+           return false;
+       };
+    private Func<EmployeeSummary, bool> _quickFilterE2 => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString2))
+            return true;
+
+        if (x.MostWorkedSection.Contains(_searchString2, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.UserName.Contains(_searchString2, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        // if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString))
+        //     return true;
+
+        return false;
+    };
+    private Func<SectionSummary, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString3))
+            return true;
+
+        if (x.Section.Contains(_searchString3, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        // if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        //     return true;
+
+        // if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString))
+        //     return true;
+
+        return false;
+    };
+    private Func<SectionSummary, bool> _quickFilter2 => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString4))
+            return true;
+
+        if (x.Section.Contains(_searchString4, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        // if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        //     return true;
+
+        // if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString))
+        //     return true;
+
+        return false;
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetDashboardProperties();
+        await GetData(1);
+        IsLoading = false;
+        _record = new() { dt1 = DateTime.Now.AddDays(-5).Date, dt2 = DateTime.Now.Date };
+        _dateRange = new DateRange(_record.dt1, _record.dt2);
+        StateHasChanged();
+
+    }
+
+    private async Task GetDashboardProperties()
+    {
+        stafflist = await api.GetStaffList();
+        summery = new LoadBusinessTimeDataSummery();
+       
+
+    }
+
+    private async Task GetData(int merchantId)
+    {
+
+    }
+
+    public class MyRecord
+    {
+        public DateTime? dt1 { get; set; }
+        public DateTime? dt2 { get; set; }
+    }
+}
+

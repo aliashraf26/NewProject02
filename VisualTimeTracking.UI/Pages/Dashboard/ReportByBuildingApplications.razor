@@ -1,0 +1,320 @@
+﻿@page "/ReportByBuildingApplications" 
+@layout MainLayout
+@attribute [Authorize]
+@inject TimeTrackingApi api;
+
+<div class="card m-2">
+    <div class="card-header">
+        <h6>Working hours Summery for: </h6>@_value
+    </div>
+    <div class="card-body">
+        <MudGrid Spacing="2" GutterSize="1">
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudTextField @bind-Value="_value" Label="BA Number" Variant="Variant.Text"></MudTextField>
+                                <ValidationMessage For="@(() => _value)" />
+                                
+                            }
+                        </MudCardContent>
+
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudStack AlignItems="AlignItems.Start" Style="height:450px">
+                                    <MudDateRangePicker @ref="_picker" PlaceholderStart="Start Date" PlaceholderEnd="End Date" Label="Range" PickerVariant="@PickerVariant.Inline" @bind-DateRange="@_dateRange" Margin="Margin.Dense">
+                                        <PickerActions>
+                                            <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.ClearAsync())">Clear</MudButton>
+                                            <MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                                            <MudButton Color="Color.Primary" OnClick="@(() => DateSelected())">Ok</MudButton>
+                                        </PickerActions>
+                                    </MudDateRangePicker>
+                                </MudStack>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%;  height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudButton OnClick="@(() => DateThisMonth())" Style="height:100%;width:100%" Variant="Variant.Filled" Color="Color.Success">This Month</MudButton>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudButton OnClick="@(() => DateLastMonth())" Style="height:100%;width:100%" Variant="Variant.Filled" Color="Color.Inherit">Last Month</MudButton>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudButton OnClick="@(() => DateThisWeek())" Style="height:100%;width:100%" Variant="Variant.Filled" Color="Color.Success">This Week</MudButton>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="2">
+                <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 123px;">
+                    <MudCard Style="width: 100%; height: 100%; cursor: pointer;">
+                        <MudCardContent Style="height: 100%; display: flex; flex-direction: column;">
+                            @if (IsLoading)
+                            {
+                                <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                            }
+                            else
+                            {
+                                <MudButton OnClick="@(() => DateLastWeek())" Style="height:100%;width:100%" Variant="Variant.Filled" Color="Color.Tertiary">Last Week</MudButton>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </div>
+      
+    <div class="card-header">
+        <h6>Overview <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong></h6>
+    </div>
+    <div class="card-body">
+        @if (IsLoading)
+        {
+            <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+        }
+        else
+        {
+            <MudDataGrid Items="@summery.LastWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter">
+                <ToolBarContent>
+
+                    <MudSpacer />
+                    <MudTextField @bind-Value="_searchString3" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.Section" Title="Worked in" />
+                    <PropertyColumn Title="Total Hours" Property="x => Formater.ToNumber(x.TotalHours).ToString(CultureInfo.InvariantCulture)" AggregateDefinition="@_calculatesum" />
+                    
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager />
+                </PagerContent>
+            </MudDataGrid>
+        }
+    </div>
+
+</div>
+
+
+@code {
+    private MudDateRangePicker _picker;
+    private List<string> balist;
+    private DateRange _dateRange { get; set; }
+    private int _index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    private string _width = "100%";
+    private string _height = "500px";
+    private string _searchString;
+    private string _value = "";
+    private string _searchString2;
+    private string _searchString3;
+    private string _searchString4;
+    private bool _sortNameByLength;
+    private ChartOptions _options = new ChartOptions();
+    private List<string> _events = new();
+    bool IsLoading = true;
+    private string[] EmployeeLabels;
+    private List<ChartSeries> EmployeeWorkDataset = new List<ChartSeries>();
+
+    private List<ChartSeries> _series = new List<ChartSeries>();
+
+    private string[] _xAxisLabels;
+    public List<ChartSeries> SeriesDepartment = new();
+    private AxisChartOptions _axisChartOptions = new() { StackedBarWidthRatio = 0.5 };
+
+    private Position _legendPosition = Position.Bottom;
+    public LoadBusinessTimeDataSummery summery = new LoadBusinessTimeDataSummery();
+    public string[] XAxisLabels = [];
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetDashboardProperties();
+        await GetData(1);
+        IsLoading = false;
+
+        StateHasChanged();
+
+    }
+
+    private async Task GetDashboardProperties()
+    {
+       // balist = await api.GetBAList();
+        summery = new LoadBusinessTimeDataSummery();
+
+
+    }
+
+    private async Task DateSelected()
+    {
+
+        IsLoading = true;
+        summery = await api.LoadDataByDateRange(_dateRange, _value + "~BA");
+        IsLoading = false;
+    }
+    private async Task DateThisWeek()
+    {
+
+        IsLoading = true;
+        summery = await api.LoadDataBySelection(1, _value + "~BA");
+        IsLoading = false;
+    }
+    private async Task DateLastWeek()
+    {
+
+        IsLoading = true;
+        summery = await api.LoadDataBySelection(2, _value + "~BA");
+        IsLoading = false;
+    }
+    private async Task DateThisMonth()
+    {
+
+        IsLoading = true;
+        summery = await api.LoadDataBySelection(3, _value + "~BA");
+        IsLoading = false;
+    }
+    private async Task DateLastMonth()
+    {
+
+        IsLoading = true;
+        summery = await api.LoadDataBySelection(4, _value + "~BA");
+        IsLoading = false;
+    }
+    AggregateDefinition<SectionSummary> _calculatesum = new AggregateDefinition<SectionSummary>
+        {
+            Type = AggregateType.Custom,
+            CustomAggregate = x =>
+            {
+                var total = x.Sum(z => z.TotalHours);
+                return $"Total Hours Spent: {Math.Round(total, 2)}";
+            }
+        };
+    private Func<EmployeeSummary, bool> _quickFilterE => x =>
+       {
+           if (string.IsNullOrWhiteSpace(_searchString))
+               return true;
+
+           if (x.MostWorkedSection.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+               return true;
+
+           if (x.UserName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+               return true;
+
+           // if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString))
+           //     return true;
+
+           return false;
+       };
+    private Func<EmployeeSummary, bool> _quickFilterE2 => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString2))
+            return true;
+
+        if (x.MostWorkedSection.Contains(_searchString2, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.UserName.Contains(_searchString2, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        // if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString))
+        //     return true;
+
+        return false;
+    };
+    private Func<SectionSummary, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString3))
+            return true;
+
+        if (x.Section.Contains(_searchString3, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        // if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        //     return true;
+
+        // if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString))
+        //     return true;
+
+        return false;
+    };
+    private Func<SectionSummary, bool> _quickFilter2 => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString4))
+            return true;
+
+        if (x.Section.Contains(_searchString4, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        // if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        //     return true;
+
+        // if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString))
+        //     return true;
+
+        return false;
+    };
+
+
+    private async Task GetData(int merchantId)
+    {
+
+    }
+
+
+}
+

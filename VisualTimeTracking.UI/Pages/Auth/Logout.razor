@@ -1,0 +1,12 @@
+﻿@page "/Logout"
+@inject AuthenticationStateProvider AuthProvider
+
+<h3>Logout</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var userService = (AuthService)AuthProvider;
+        await userService.Logout();
+    }
+}

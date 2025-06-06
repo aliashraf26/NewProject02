@@ -1,0 +1,81 @@
+﻿<MudDialog>
+    <DialogContent>
+        <EditForm Model="viewModel" FormName="AddNewUser">
+            <DataAnnotationsValidator />
+            <table class="table table-borderless table-sm">
+                <tbody>
+                    <tr class="col-md-12">
+                        <td class="col-md-6">
+                            <MudTextField @bind-Value="viewModel.FullName" Label="Name" Variant="Variant.Outlined" Required></MudTextField>
+                        </td>
+                        <td class="col-md-6">
+                            <MudTextField @bind-Value="viewModel.UserName" Label="Username" Variant="Variant.Outlined" Required></MudTextField>
+                        </td>
+                    </tr>
+                    <tr class="col-md-12">
+                        <td class="col-md-6">
+                            <MudTextField InputType="@PasswordInput" @bind-Value="viewModel.Password" Label="Password" Variant="Variant.Outlined"
+                                          Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" Required></MudTextField>
+                        </td>
+                        <td class="col-md-6">
+
+                            <MudSelect AnchorOrigin="Origin.BottomCenter" @bind-Value="viewModel.Role"
+                                       Variant="Variant.Outlined"
+                                       Label="User Type"
+                                       Dense="true"
+                                       Disabled="false"
+                                       ReadOnly="false"
+                                       Placeholder="Select User Type"
+                                       HelperTextOnFocus="true"
+                                       Clearable="true"
+                                       Searchable="true" Required>
+
+                                <MudSelectItem Value="@("Customer")">Customer</MudSelectItem>
+                                <MudSelectItem Value="@("Supplier")">Supplier</MudSelectItem>
+
+                            </MudSelect>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        @* <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton> *@
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    
+    [Parameter, EditorRequired] public UserViewModel viewModel { get; set; } = new();
+    
+    [CascadingParameter] private MudDialog mudDialog { get; set; }
+    
+    // private void Cancel() => MudDialog. Cancel();
+    
+    // private void Submit() => MudDialog.Close(DialogResult.Ok(viewModel));
+
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+
+    void ButtonTestclick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}
