@@ -358,6 +358,33 @@ function initPieChart(id, name, data, categories, isCurrency, showLegend) {
     chart.render();
 }
 
+function capitalize(str) {
+    if (typeof str !== 'string') return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function downloadCSV(data, filename = 'File.csv') {
+    if (!data.length) return;
+
+    const titleKeysCap = Object.keys(data[0]).map(capitalize);
+    const titleKeys = Object.keys(data[0]);
+
+    const refinedData = [titleKeysCap, ...data.map(item => titleKeys.map(key => `"${item[key]}"`))];
+
+    let csvContent = refinedData.map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const objUrl = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = objUrl;
+    link.download = filename;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(objUrl);
+}
 
 
 function toDecimal2(val) {

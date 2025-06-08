@@ -2,6 +2,7 @@
 @layout MainLayout
 @attribute [Authorize]
 @inject TimeTrackingApi api;
+@inject IJSRuntime JS
 
 <div class="card m-2">
     <div class="card-header">
@@ -20,8 +21,16 @@
                             else
                             {
 //change to list
-<MudTextField @bind-Value="_value" Label="BA Number" Variant="Variant.Text"></MudTextField>
-                               
+@* <MudTextField @bind-Value="_value" Label="BA Number" Variant="Variant.Text"></MudTextField> *@
+                              <label class="mb-6">Select BA Number</label>
+                              <SfDropDownList TValue="string"
+                                    TItem="BANumber"
+                                    Placeholder="BA Number"
+                                    AllowFiltering="true"
+                                    DataSource="@BANumbers"
+                                    @bind-Value="selectedBANumber">
+                                     <DropDownListFieldSettings Text="Name" Value="Code" />
+                            </SfDropDownList>
                                 
                             }
                         </MudCardContent>
@@ -39,6 +48,8 @@
                             }
                             else
                             {
+                              <label class="mb-6">Select Date</label>
+
                                 <MudStack AlignItems="AlignItems.Start" Style="height:450px">
                                     @* <MudDateRangePicker @ref="_picker" PlaceholderStart="Start Date" PlaceholderEnd="End Date" Label="Range" PickerVariant="@PickerVariant.Inline" @bind-DateRange="@_dateRange" Margin="Margin.Dense">
                                         <PickerActions>
@@ -123,8 +134,23 @@
     </div>
       
     <div class="card-header">
-        <h6>Overview <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong></h6>
     </div>
+    <div class="card-header  d-flex justify-content-between">
+        <h6>Overview <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong></h6>
+                       
+               <div class="d-flex">
+                                  @if (IsLoading)
+            {
+            <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                
+            }
+            else{
+
+            
+                   <MudFab StartIcon="@Icons.Material.Filled.ArrowDownward" Label="Export CSV" Color="Color.Success" OnClick="@(() => ExportCSV(1))" />
+            }
+                   </div>
+           </div>
     <div class="card-body">
         @if (IsLoading)
         {
@@ -219,11 +245,28 @@
 
     }
 
+    public class BANumber
+    {
+        public string Name { get; set; }  
+        public string Code { get; set; }  
+    }
+
+private List<BANumber> BANumbers = new()
+{
+    new BANumber { Name = "BA001", Code = "BA001" },
+    new BANumber { Name = "BA002", Code = "BA002" },
+    new BANumber { Name = "BA003", Code = "BA003" },
+    new BANumber { Name = "BA004", Code = "BA004" }
+};
+
+private string selectedBANumber;
+
+
     private async Task DateSelected()
     {
 
         IsLoading = true;
-        summery = await api.LoadDataByDateRange(_dateRange, _value + "~BA");
+        //summery = await api.LoadDataByDateRange(_dateRange, _value + "~BA");
         IsLoading = false;
     }
     private async Task DateThisWeek()
@@ -334,6 +377,30 @@
 
     }
 
+
+     void ExportCSV(int type)
+    {
+       if (type == 1)
+        {
+            var filtered = summery.LastWeekSummery.sections;
+
+            var formattedList = new List<object>();
+
+            foreach (var item in filtered)
+            {
+                formattedList.Add(new
+                {
+                    Worked_In = item.Section,
+                    Total_Hours = Formater.ToDecimal2(Convert.ToDecimal(item.TotalHours))
+
+
+                });
+            }
+
+            var path = JS.InvokeAsync<object>("downloadCSV", formattedList, $"FileCSV-{DateTime.Now.Ticks}.csv");
+        }
+        
+    }
 
 }
 

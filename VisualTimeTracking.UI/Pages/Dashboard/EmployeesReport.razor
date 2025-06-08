@@ -4,6 +4,7 @@
 @layout MainLayout
 @attribute [Authorize]
 @inject TimeTrackingApi api;
+@inject IJSRuntime JS
 
 <div class="card m-2">
     <div class="card-header">
@@ -59,7 +60,15 @@
                                         </PickerActions>
                                     </MudDateRangePicker>
                                 </MudStack> *@
-                               <SfDateRangePicker TValue="DateTime?" Placeholder="Choose a range" FullScreen="true" ShowClearButton="true"></SfDateRangePicker>
+
+
+                              @*  <SfDateRangePicker TValue="DateTime[]" 
+                                       @ref="_dateRangePicker"
+                                       Placeholder="Select Date Range"
+                                       ShowClearButton="true"
+                                       OnChange="DateSelected">
+                                </SfDateRangePicker> *@
+
 
                             }
                         </MudCardContent>
@@ -255,8 +264,23 @@
         </MudGrid>
     </div>
     <div class="card-header">
-        <h6>Employee Overview <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong></h6>
     </div>
+    <div class="card-header  d-flex justify-content-between">
+        <h6>Employee Overview <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong></h6>
+                            
+                    <div class="d-flex">
+                           @if (IsLoading)
+            {
+            <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                
+            }
+            else{
+
+            
+                        <MudFab StartIcon="@Icons.Material.Filled.ArrowDownward" Label="Export CSV" Color="Color.Success" OnClick="@(() => ExportCSV(1))" />
+            }
+                    </div>
+                </div>
     <div class="card-body">
         @if (IsLoading)
         {
@@ -318,8 +342,23 @@
     </div>
 
     <div class="card-header">
-        <h6>Applications Overview <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong></h6>
     </div>
+    <div class="card-header  d-flex justify-content-between">
+        <h6>Applications Overview <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong></h6>
+                       
+               <div class="d-flex">
+                            @if (IsLoading)
+                            {
+                            <MudSkeleton Height="100px" Width="100%" Animation="Animation.Pulse" />
+                
+                            }
+                            else{
+
+            
+                                   <MudFab StartIcon="@Icons.Material.Filled.ArrowDownward" Label="Export CSV" Color="Color.Success" OnClick="@(() => ExportCSV(2))" />
+                            }
+                   </div>
+           </div>
     <div class="card-body">
         @if (IsLoading)
         {
@@ -350,7 +389,7 @@
                 </GridColumns>
             </SfGrid>
 
-            <MudDataGrid Items="@summery.LastWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter">
+           @*  <MudDataGrid Items="@summery.LastWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter">
                 <ToolBarContent>
 
                     <MudSpacer />
@@ -365,7 +404,7 @@
                 <PagerContent>
                     <MudDataGridPager />
                 </PagerContent>
-            </MudDataGrid>
+            </MudDataGrid> *@
         }
     </div>
 
@@ -373,6 +412,10 @@
 
 
 @code {
+
+   private SfDateRangePicker<DateTime[]> _dateRangePicker;
+
+
     private MudDateRangePicker _picker;
     private MyRecord _record;
     private List<EmpData> stafflist;
@@ -401,12 +444,12 @@
     private Position _legendPosition = Position.Bottom;
     public LoadBusinessTimeDataSummery summery = new LoadBusinessTimeDataSummery();
     public string[] XAxisLabels = [];
-    
+
     async void HandleDateRangeChange()
     {
         await _picker.CloseAsync();
         System.Threading.Thread.Sleep(1000);
-        await DateSelected(_dateRange);
+        //await DateSelected(_dateRange);
     }
     // private async Task DateSelected(DateRange p_dateRange)
     // {
@@ -416,13 +459,22 @@
     //     summery = await api.LoadDataByDateRange(p_dateRange, _value);
     //     IsLoading = false;
     // }
-    private async Task DateSelected(SfDateRangePicker<DateTime?> p_dateRange)
-    {
 
-        IsLoading = true;
-        StateHasChanged();
-        summery = await api.LoadDataByDateRange(p_dateRange, _value);
-        IsLoading = false;
+
+    private async Task DateSelected(Syncfusion.Blazor.Calendars.ChangeEventArgs<DateTime[]> args)
+    {
+        if (args.Value != null && args.Value.Length == 2)
+        {
+            var startDate = args.Value[0];
+            var endDate = args.Value[1];
+
+            IsLoading = true;
+            StateHasChanged();
+
+            summery = await api.LoadDataByDateRange(startDate, endDate, _value);
+
+            IsLoading = false;
+        }
     }
     private async Task DateThisWeek()
     {
@@ -554,6 +606,52 @@
     {
         public DateTime? dt1 { get; set; }
         public DateTime? dt2 { get; set; }
+    }
+
+    void ExportCSV(int type)
+    {
+        if (type == 1)
+        {
+            var filtered = summery.LastWeekSummery.employees;
+
+            var formattedList = new List<object>();
+
+            foreach (var item in filtered)
+            {
+                formattedList.Add(new
+                {
+                    User = item.UserName,
+                    Work_Hours = item.WorkHours,
+                    Most_Worked_Section = item.MostWorkedSection,
+                    Idle_Hours = item.IdleHours,
+                    Productivity_Percent = Formater.FormatAsPercentage(item.ProductivityPercent)
+
+                });
+            }
+
+            var path = JS.InvokeAsync<object>("downloadCSV", formattedList, $"FileCSV-{DateTime.Now.Ticks}.csv");
+        }
+        else if (type == 2)
+        {
+            var filtered = summery.LastWeekSummery.sections;
+
+            var formattedList = new List<object>();
+
+            foreach (var item in filtered)
+            {
+                formattedList.Add(new
+                {
+                    Worked_In = item.Section,
+                    Total_Hours = Formater.ToDecimal2(Convert.ToDecimal(item.TotalHours)),
+                    Work_Percentage = Formater.FormatAsPercentage(item.WorkPercentage)
+
+
+                });
+            }
+
+            var path = JS.InvokeAsync<object>("downloadCSV", formattedList, $"FileCSV-{DateTime.Now.Ticks}.csv");
+        }
+        
     }
 }
 
