@@ -50,7 +50,7 @@
                             }
                             else
                             { 
-                                <MudStack AlignItems="AlignItems.Start" Style="height:450px">
+                                @* <MudStack AlignItems="AlignItems.Start" Style="height:450px">
                                     <MudDateRangePicker  @ref="_picker" PlaceholderStart="Start Date" PlaceholderEnd="End Date" @bind-DateRange="@_dateRange"  Label="Range" PickerVariant="@PickerVariant.Inline" Margin="Margin.Dense">
                                         <PickerActions>
                                             <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.ClearAsync())">Clear</MudButton>
@@ -58,7 +58,9 @@
                                             <MudButton Color="Color.Primary" OnClick="@(() => HandleDateRangeChange())">Ok</MudButton>
                                         </PickerActions>
                                     </MudDateRangePicker>
-                                </MudStack>
+                                </MudStack> *@
+                               <SfDateRangePicker TValue="DateTime?" Placeholder="Choose a range" FullScreen="true" ShowClearButton="true"></SfDateRangePicker>
+
                             }
                         </MudCardContent>
                     </MudCard>
@@ -262,7 +264,32 @@
         }
         else
         {
-            <MudDataGrid Items="@summery.LastWeekSummery.employees" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilterE">
+            <SfGrid DataSource="@summery.LastWeekSummery.employees" AllowPaging="true" AllowSorting="true" AllowFiltering="true" AllowGrouping="true" Toolbar="@(new List<string>() { "Search" })">
+        <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
+
+        <GridColumns>
+            <GridColumn Field="UserName" HeaderText="User" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+                        <GridColumn Field="WorkHours" HeaderText="Work Hours" TextAlign="TextAlign.Center" Format="N2" Width="120"></GridColumn>
+            <GridColumn Field="MostWorkedSection" HeaderText="Most Worked Section" TextAlign="TextAlign.Center" Width="180"></GridColumn>
+                        <GridColumn Field="IdleHours" HeaderText="Idle Hours" TextAlign="TextAlign.Center" Format="N2" Width="120"></GridColumn>
+                        <GridColumn Field="ProductivityPercent" HeaderText="Productivity (%)" TextAlign="TextAlign.Center" Format="P2" Width="150"></GridColumn>
+        
+            <GridColumn HeaderText="Performance" Width="180" TextAlign="TextAlign.Center">
+                        <Template>
+                            @{
+                                var item = context as EmployeeSummary; // Replace with your model class
+                            }
+                            <SfRating ReadOnly="true"
+                                      ShowTooltip="false"
+                                      ItemsCount="5"
+                                      Value=@Convert.ToDouble(item.StarsOutOfFive) />
+
+                        </Template>
+                    </GridColumn>
+        </GridColumns>
+    </SfGrid>
+
+           @*  <MudDataGrid Items="@summery.LastWeekSummery.employees" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilterE">
                 <ToolBarContent>
                     <MudSpacer />
                     <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
@@ -277,16 +304,16 @@
                     <TemplateColumn CellClass="d-flex justify-start" Title="Performance">
                         <CellTemplate>
                             <MudStack Row>
-                                <MudRating ReadOnly="true" Size="@Size.Small" SelectedValue="@context.Item.StarsOutOfFive" />
+                                <MudRating ReadOnly="true" Size="@Size.Small" SelectedValue="@context.Item.StarsOutOfFive" /> *@
                                 @* <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Success">Full summery</MudButton> *@
-                            </MudStack>
+                          @*   </MudStack>
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
                 <PagerContent>
                     <MudDataGridPager />
                 </PagerContent>
-            </MudDataGrid>
+            </MudDataGrid>  *@
         }
     </div>
 
@@ -300,6 +327,29 @@
         }
         else
         {
+            <SfGrid DataSource="@summery.LastWeekSummery.sections"
+                    AllowPaging="true"
+                    AllowSorting="true"
+                    AllowFiltering="true"
+                    AllowGrouping="true"
+                    Toolbar="@(new List<string>() { "Search" })">
+
+                <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
+
+                <GridColumns>
+                    <GridColumn Field="Section" HeaderText="Worked in" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+                    <GridColumn Field="TotalHours" HeaderText="Total Hours" TextAlign="TextAlign.Center" Format="N2" Width="120"></GridColumn>
+                    <GridColumn HeaderText="Work Percentage(%)" Width="120" AllowFiltering="true" AllowSearching="true" TextAlign="TextAlign.Center">
+                        <Template>
+                            @{
+                                var item = context as SectionSummary;
+                            }
+                            @Formater.FormatAsPercentage(item.WorkPercentage)
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+
             <MudDataGrid Items="@summery.LastWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter">
                 <ToolBarContent>
 
@@ -326,7 +376,7 @@
     private MudDateRangePicker _picker;
     private MyRecord _record;
     private List<EmpData> stafflist;
-    private DateRange _dateRange { get; set; }
+    private SfDateRangePicker<DateTime?> _dateRange { get; set; }
     private int _index = -1; //default value cannot be 0 -> first selectedindex is 0.
     private string _width = "100%";
     private string _height = "500px";
@@ -351,15 +401,24 @@
     private Position _legendPosition = Position.Bottom;
     public LoadBusinessTimeDataSummery summery = new LoadBusinessTimeDataSummery();
     public string[] XAxisLabels = [];
+    
     async void HandleDateRangeChange()
     {
         await _picker.CloseAsync();
         System.Threading.Thread.Sleep(1000);
         await DateSelected(_dateRange);
     }
-    private async Task DateSelected(DateRange p_dateRange)
+    // private async Task DateSelected(DateRange p_dateRange)
+    // {
+
+    //     IsLoading = true;
+    //     StateHasChanged();
+    //     summery = await api.LoadDataByDateRange(p_dateRange, _value);
+    //     IsLoading = false;
+    // }
+    private async Task DateSelected(SfDateRangePicker<DateTime?> p_dateRange)
     {
-         
+
         IsLoading = true;
         StateHasChanged();
         summery = await api.LoadDataByDateRange(p_dateRange, _value);
@@ -367,21 +426,21 @@
     }
     private async Task DateThisWeek()
     {
-         
+
         IsLoading = true; 
         summery = await api.LoadDataBySelection(1,_value);
         IsLoading = false;
     }
     private async Task DateLastWeek()
     {
-         
+
         IsLoading = true; 
         summery = await api.LoadDataBySelection(2,_value);
         IsLoading = false;
     }
     private async Task DateThisMonth()
     {
-         
+
         IsLoading = true; 
         summery = await api.LoadDataBySelection(3, _value);
         IsLoading = false;
@@ -395,7 +454,7 @@
     }
     AggregateDefinition<SectionSummary> _calculatesum = new AggregateDefinition<SectionSummary>
         {
-            Type = AggregateType.Custom,
+            Type = MudBlazor.AggregateType.Custom,
             CustomAggregate = x =>
             {
                 var total = x.Sum(z => z.TotalHours);
@@ -473,7 +532,7 @@
         await GetData(1);
         IsLoading = false;
         _record = new() { dt1 = DateTime.Now.AddDays(-5).Date, dt2 = DateTime.Now.Date };
-        _dateRange = new DateRange(_record.dt1, _record.dt2);
+        //_dateRange = new DateRange(_record.dt1, _record.dt2);
         StateHasChanged();
 
     }

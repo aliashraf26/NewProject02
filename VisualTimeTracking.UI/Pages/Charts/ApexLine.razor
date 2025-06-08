@@ -1,0 +1,39 @@
+﻿@inject IJSRuntime JS
+
+<div id="@Id">
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string? Id { get; set; }
+
+    [Parameter, EditorRequired] public string? Name { get; set; }
+
+    [Parameter, EditorRequired] public string? XTitle { get; set; }
+
+    [Parameter, EditorRequired] public string? YTitle { get; set; }
+
+    [Parameter, EditorRequired] public List<ApexLineChart>? Data { get; set; }
+
+    [Parameter, EditorRequired] public List<string>? Categories { get; set; }
+
+    [Parameter] public string? Color { get; set; } = "#007bff";
+
+    [Parameter] public Func<object>? Update { get; set; }
+
+    [Parameter] public bool isCurrency { get; set; } = true;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) 
+        {
+            await JS.InvokeAsync<object>("initLineChart", Id, Name, XTitle, YTitle, Data, Categories, isCurrency);
+        }
+    }
+
+    public class ApexLineChart
+    {
+        public string Name { get; set; }
+        public List<double> Data { get; set; }
+    }
+}

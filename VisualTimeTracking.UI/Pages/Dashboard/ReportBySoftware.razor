@@ -396,7 +396,7 @@
 
     AggregateDefinition<SectionSummary> _calculatesum = new AggregateDefinition<SectionSummary>
         {
-            Type = AggregateType.Custom,
+            Type = MudBlazor.AggregateType.Custom,
             CustomAggregate = x =>
             {
                 var total = x.Sum(z => z.TotalHours);

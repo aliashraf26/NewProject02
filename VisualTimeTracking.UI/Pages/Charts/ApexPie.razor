@@ -1,0 +1,27 @@
+﻿@inject IJSRuntime JS
+
+<div id="@Id">
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string? Id { get; set; }
+
+    [Parameter, EditorRequired] public string? Name { get; set; }
+
+    [Parameter, EditorRequired] public List<double>? Data { get; set; }
+
+    [Parameter, EditorRequired] public List<string>? Categories { get; set; }
+
+    [Parameter, EditorRequired] public bool isCurrency { get; set; } = true;
+    [Parameter, EditorRequired] public bool showLegend { get; set; } = false;
+
+    [Parameter] public List<string>? Color { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeAsync<object>("initPieChart", Id, Name, Data, Categories, isCurrency, showLegend);
+        }
+    }
+}

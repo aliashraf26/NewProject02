@@ -16,6 +16,7 @@ using TrackingReports.Models;
 using MudBlazor;
 using System.Data;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Syncfusion.Blazor.Calendars;
 
 namespace VisualTimeTracking.UI.ApiServices
 {
@@ -171,7 +172,45 @@ namespace VisualTimeTracking.UI.ApiServices
             return null;
 
         }
-        public async Task<LoadBusinessTimeDataSummery> LoadDataByDateRange(DateRange date, string employee)
+        //public async Task<LoadBusinessTimeDataSummery> LoadDataByDateRange(DateRange date, string employee)
+        //{
+
+        //    LoadBusinessTimeDataSummery data = new LoadBusinessTimeDataSummery();
+        //    if (string.IsNullOrEmpty(employee))
+        //    {
+        //        _toastService.ShowWarning("Please Select an Employee from the List.");
+        //        return data;
+        //    }
+        //    else if (date.Start == DateTime.MinValue || date.End == DateTime.MinValue)
+        //    {
+        //        _toastService.ShowWarning("Please Select a Valid Date Range.");
+        //        return data;
+        //    }
+
+        //    try
+        //    {
+        //        ParamData pdata = new ParamData();
+        //        pdata.Clientid = await _localStorageService.GetItem<string>("companyid");
+        //        pdata.StartDate = date.Start.GetValueOrDefault();
+        //        pdata.EndDate = date.End.GetValueOrDefault();
+        //        pdata.DomainName = employee;
+        //        var apiResponse = await _httpService.Post<ServiceResponse<LoadBusinessTimeDataSummery>>("/api/auth/LoadDataByParams", pdata);
+        //        if (apiResponse.Success && apiResponse.Data != null)
+        //        {
+        //            data = apiResponse.Data;
+        //        }
+        //        return data;
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+
+        //    }
+
+        //    return null;
+
+        //}
+        public async Task<LoadBusinessTimeDataSummery> LoadDataByDateRange(SfDateRangePicker<DateTime?> date, string employee)
         {
 
             LoadBusinessTimeDataSummery data = new LoadBusinessTimeDataSummery();
@@ -180,7 +219,7 @@ namespace VisualTimeTracking.UI.ApiServices
                 _toastService.ShowWarning("Please Select an Employee from the List.");
                 return data;
             }
-            else if (date.Start == DateTime.MinValue || date.End == DateTime.MinValue)
+            else if (date.StartDate == DateTime.MinValue || date.EndDate == DateTime.MinValue)
             {
                 _toastService.ShowWarning("Please Select a Valid Date Range.");
                 return data;
@@ -190,8 +229,8 @@ namespace VisualTimeTracking.UI.ApiServices
             {
                 ParamData pdata = new ParamData();
                 pdata.Clientid = await _localStorageService.GetItem<string>("companyid");
-                pdata.StartDate = date.Start.GetValueOrDefault();
-                pdata.EndDate = date.End.GetValueOrDefault();
+                pdata.StartDate = date.StartDate.GetValueOrDefault();
+                pdata.EndDate = date.EndDate.GetValueOrDefault();
                 pdata.DomainName = employee;
                 var apiResponse = await _httpService.Post<ServiceResponse<LoadBusinessTimeDataSummery>>("/api/auth/LoadDataByParams", pdata);
                 if (apiResponse.Success && apiResponse.Data != null)

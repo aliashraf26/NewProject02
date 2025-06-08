@@ -1,0 +1,34 @@
+﻿<MudCard Class="my-2 p-2 text-center">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@FooterText</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+            @* <MudChart ChartType="ChartType.Line" Width="100%" Height="450"
+                      ChartSeries="@ChartSeries"
+                      XAxisLabels="@XAxisLabels"
+                      ChartOptions="ChartOptions" /> *@
+        @if (ChartSeries.Count > 0)
+        {
+            <ApexLine Categories="XAxisLabels.ToList()"
+                      Name="@FooterText" XTitle="@XTitle" YTitle="@YTitle"
+                      Data="ChartSeries.Select(x => new ApexLine.ApexLineChart { Data = x.Data.ToList(), Name = x.Name }).ToList()"
+                      Id="@("line_" + Id)" isCurrency="@isCurrency" />
+        }
+
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+    [Parameter] public string Name { get; set; } = "";
+    [Parameter] public string YTitle { get; set; } = "";
+    [Parameter] public string XTitle { get; set; } = "";
+    [Parameter] public List<ChartSeries> ChartSeries { get; set; } = new();
+    [Parameter] public string[] XAxisLabels { get; set; } = Array.Empty<string>();
+    [Parameter] public ChartOptions ChartOptions { get; set; } = new ChartOptions();
+    [Parameter] public string FooterText { get; set; } = string.Empty;
+    [Parameter] public bool isCurrency { get; set; } = true;
+
+}

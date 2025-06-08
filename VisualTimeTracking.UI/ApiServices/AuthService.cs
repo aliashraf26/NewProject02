@@ -74,7 +74,7 @@ namespace VisualTimeTracking.UI.ApiServices
             }
             catch (Exception ex)
             {
-                _toastService.ShowError("error");
+                _toastService.ShowError(ex.Message.ToString());
                 return false;
             }
         }

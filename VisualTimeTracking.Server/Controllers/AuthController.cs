@@ -12,8 +12,7 @@ using Newtonsoft.Json;
 namespace VisualTimeTracking.Server.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
+    [ApiController] 
     public class AuthController : ControllerBase
     {
         public AuthController( )

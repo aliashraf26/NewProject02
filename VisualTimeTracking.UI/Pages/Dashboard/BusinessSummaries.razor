@@ -9,6 +9,8 @@
         <h6>Working Hours Summery All Employees</h6>@*  <strong>@summery.LastWeekSummery.StartDate</strong> - <strong>@summery.LastWeekSummery.EndDate</strong> *@
     </div>
     <div class="card-body">
+
+        
         <MudGrid Spacing="2" GutterSize="1">
                <MudItem xs="12" sm="6" md="2">
                     <MudPaper Class="pa-4" Elevation="4" Style="width: 100%; height: 160px;">
@@ -273,7 +275,32 @@
         }
         else
         {
-            <MudDataGrid Items="@summery.LastWeekSummery.employees" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilterE">
+                <SfGrid DataSource="@summery.LastWeekSummery.employees" AllowPaging="true" AllowSorting="true" AllowFiltering="true" AllowGrouping="true" Toolbar="@(new List<string>() { "Search" })">
+        <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
+
+        <GridColumns>
+            <GridColumn Field="UserName" HeaderText="User" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+                        <GridColumn Field="WorkHours" HeaderText="Work Hours" TextAlign="TextAlign.Center" Format="N2" Width="120"></GridColumn>
+            <GridColumn Field="MostWorkedSection" HeaderText="Most Worked Section" TextAlign="TextAlign.Center" Width="180"></GridColumn>
+                        <GridColumn Field="IdleHours" HeaderText="Idle Hours" TextAlign="TextAlign.Center" Format="N2" Width="120"></GridColumn>
+                        <GridColumn Field="ProductivityPercent" HeaderText="Productivity (%)" TextAlign="TextAlign.Center" Format="P2" Width="150"></GridColumn>
+        
+            <GridColumn HeaderText="Performance" Width="180" TextAlign="TextAlign.Center">
+                        <Template>
+                            @{
+                                var item = context as EmployeeSummary; // Replace with your model class
+                            }
+                            <SfRating ReadOnly="true"
+                                      ShowTooltip="false"
+                                      ItemsCount="5"
+                                      Value=@Convert.ToDouble(item.StarsOutOfFive) />
+
+                        </Template>
+                    </GridColumn>
+        </GridColumns>
+    </SfGrid>
+
+           @*  <MudDataGrid Items="@summery.LastWeekSummery.employees" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilterE">
                 <ToolBarContent>
 
                     <MudSpacer />
@@ -289,18 +316,17 @@
                     <TemplateColumn CellClass="d-flex justify-start" Title="Performance">
                         <CellTemplate>
                             <MudStack Row>
-                                <MudRating ReadOnly="true" Size="@Size.Small" SelectedValue="@context.Item.StarsOutOfFive" />
+                                <MudRating ReadOnly="true" Size="@Size.Small" SelectedValue="@context.Item.StarsOutOfFive" /> *@
                                 @* <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Success">Full summery</MudButton> *@
-                            </MudStack>
+                           @*  </MudStack>
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
                 <PagerContent>
                     <MudDataGridPager />
                 </PagerContent>
-            </MudDataGrid>
+            </MudDataGrid>*@
         }
-
         
     </div>
     <div class="card-header">
@@ -313,7 +339,48 @@
         }
         else
         {
-        <MudDataGrid Items="@summery.CurrentWeekSummery.employees" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilterE2">
+
+            <SfGrid DataSource="@summery.CurrentWeekSummery.employees"
+                    AllowPaging="true"
+                    AllowSorting="true"
+                    AllowFiltering="true"
+                    AllowGrouping="true"
+                    Toolbar="@(new List<string>() { "Search" })">
+
+                <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
+
+                <GridColumns>
+                    <GridColumn Field="UserName" HeaderText="User" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+
+                    <GridColumn Field="WorkHours" HeaderText="Work Hours" TextAlign="TextAlign.Center" Format="N2" Width="120"></GridColumn>
+
+                    <GridColumn Field="MostWorkedSection" HeaderText="Most Worked Section" TextAlign="TextAlign.Center" Width="180"></GridColumn>
+
+                    <GridColumn HeaderText="Idle Hours" Width="120" TextAlign="TextAlign.Center">
+                        <Template>
+                            @{
+                                var item = context as EmployeeSummary; 
+                            }
+                            @Formater.ToNumber(item.IdleHours)
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="ProductivityPercent" HeaderText="Productivity (%)" TextAlign="TextAlign.Center" Format="N2" Width="150"></GridColumn>
+
+                    <GridColumn HeaderText="Performance" Width="180" TextAlign="TextAlign.Center">
+                        <Template>
+                            @{
+                                var item = context as EmployeeSummary; // Replace with your model class
+                            }
+                            <SfRating ReadOnly="true"
+                                      ShowTooltip="false"
+                                      ItemsCount="5"
+                                      Value=@Convert.ToDouble(item.StarsOutOfFive) />
+
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+         @* <MudDataGrid Items="@summery.CurrentWeekSummery.employees" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilterE2">
             <ToolBarContent>
 
                 <MudSpacer />
@@ -329,16 +396,16 @@
                 <TemplateColumn CellClass="d-flex justify-start" Title="Performance">
                     <CellTemplate>
                         <MudStack Row>
-                            <MudRating ReadOnly="true" Size="@Size.Small" SelectedValue="@context.Item.StarsOutOfFive" />
+                            <MudRating ReadOnly="true" Size="@Size.Small" SelectedValue="@context.Item.StarsOutOfFive" />  *@
                             @* <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Success">Full summery</MudButton> *@
-                        </MudStack>
+                       @* </MudStack>
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>
             <PagerContent>
                 <MudDataGridPager />
             </PagerContent>
-        </MudDataGrid>
+        </MudDataGrid>  *@
         }
     </div>
     <div class="card-header">
@@ -351,7 +418,29 @@
         }
         else
         {
-        <MudDataGrid Items="@summery.LastWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter">
+            <SfGrid DataSource="@summery.LastWeekSummery.sections"
+                    AllowPaging="true"
+                    AllowSorting="true"
+                    AllowFiltering="true"
+                    AllowGrouping="true"
+                    Toolbar="@(new List<string>() { "Search" })">
+
+                <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
+
+                <GridColumns>
+                    <GridColumn Field="Section" HeaderText="Worked in" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+                    <GridColumn Field="TotalHours" HeaderText="Total Hours" TextAlign="TextAlign.Center" Format="N2" Width="120"></GridColumn>
+                    <GridColumn HeaderText="Work Percentage(%)" Width="120" AllowFiltering="true" AllowSearching="true" TextAlign="TextAlign.Center">
+                        <Template>
+                            @{
+                                var item = context as SectionSummary;
+                            }
+                            @Formater.FormatAsPercentage(item.WorkPercentage)
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+        @* <MudDataGrid Items="@summery.LastWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter">
             <ToolBarContent>
                  
                 <MudSpacer />
@@ -366,7 +455,7 @@
             <PagerContent>
                 <MudDataGridPager/>
             </PagerContent>
-        </MudDataGrid> 
+        </MudDataGrid>  *@
         }
     </div>
     <div class="card-header">
@@ -379,7 +468,75 @@
         }
         else
         {
-        <MudDataGrid Items="@summery.CurrentWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter2">
+            <SfGrid DataSource="@summery.CurrentWeekSummery.sections"
+                    AllowPaging="true"
+                    AllowSorting="true"
+                    AllowFiltering="true"
+                    AllowGrouping="true"
+                    Toolbar="@(new List<string>() { "Search" })">
+
+                <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
+
+                <GridColumns>
+                    <GridColumn Field="Section" HeaderText="Worked in" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+                    <GridColumn Field="TotalHours" HeaderText="Total Hours" TextAlign="TextAlign.Center" Format="N2" Width="120" ></GridColumn>
+                    <GridColumn HeaderText="Work Percentage(%)" Width="120" AllowFiltering="true" AllowSearching="true" TextAlign="TextAlign.Center">
+                        <Template>
+                            @{
+                                var item = context as SectionSummary;
+                            }
+                            @Formater.FormatAsPercentage(item.WorkPercentage)
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+
+            //
+            <SfGrid DataSource="@summery.CurrentWeekSummery.sections"
+        AllowPaging="true"
+        AllowSorting="true"
+        AllowFiltering="true"
+        AllowGrouping="true"
+        ShowColumnChooser="true"
+        Toolbar="@(new List<string>() { "Search" })">
+    <GridAggregates>
+                    <GridAggregate>
+                        <GridAggregateColumns>
+                            <GridAggregateColumn Field="WorkPercentage" Type="Syncfusion.Blazor.Grids.AggregateType.Sum" Format="C2">
+                                <FooterTemplate>
+                                    @{ var SumValue = (context as AggregateTemplateContext);
+                                    <div>
+                                        Sum: @SumValue.Sum
+                                    </div>
+                                    }
+                                </FooterTemplate>
+                            </GridAggregateColumn>
+                        </GridAggregateColumns>
+                     </GridAggregate>
+     </GridAggregates>
+    <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field="Section" HeaderText="Worked in" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+
+        <GridColumn Field="TotalHours" HeaderText="Total Hours" TextAlign="TextAlign.Center"
+                    Format="N2" Width="120">
+               
+        </GridColumn>
+
+        <GridColumn HeaderText="Work Percentage (%)" Width="120"
+                    AllowFiltering="true" AllowSearching="true" TextAlign="TextAlign.Center">
+            <Template>
+                @{
+                    var item = context as SectionSummary;
+                }
+                @Formater.FormatAsPercentage(item.WorkPercentage)
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+
+       @*  <MudDataGrid Items="@summery.CurrentWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter2">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Applications Overview</MudText>
                 <MudSpacer />
@@ -394,7 +551,7 @@
             <PagerContent>
                 <MudDataGridPager  />
             </PagerContent>
-        </MudDataGrid>
+        </MudDataGrid> *@
         }
     </div>
 </div>
@@ -418,7 +575,7 @@
 </div> *@
 
 
-@code { 
+@code {
     private int _index = -1; //default value cannot be 0 -> first selectedindex is 0.
     private string _width = "100%";
     private string _height = "500px"; 
@@ -436,11 +593,12 @@
     private List<ChartSeries> _series = new List<ChartSeries>();
     private string[] _xAxisLabels;
 
-    
+
     private AxisChartOptions _axisChartOptions = new() { StackedBarWidthRatio = 0.5 };
 
     private Position _legendPosition = Position.Bottom;
     public LoadBusinessTimeDataSummery summery = new LoadBusinessTimeDataSummery();
+
     protected override async Task OnInitializedAsync()
     {
         await GetDashboardProperties(); 
@@ -503,13 +661,14 @@
     }
     AggregateDefinition<SectionSummary> _calculatesum = new AggregateDefinition<SectionSummary>
         {
-            Type = AggregateType.Custom,
+            Type = MudBlazor.AggregateType.Custom,
             CustomAggregate = x =>
             {
                 var total = x.Sum(z => z.TotalHours); 
                 return $"Total Hours Spent: {Math.Round(total,2)}";
             }
         };
+
     private Func<EmployeeSummary, bool> _quickFilterE => x =>
        {
        if (string.IsNullOrWhiteSpace(_searchString))

@@ -19,8 +19,9 @@
                             }
                             else
                             {
-                                <MudTextField @bind-Value="_value" Label="BA Number" Variant="Variant.Text"></MudTextField>
-                                <ValidationMessage For="@(() => _value)" />
+//change to list
+<MudTextField @bind-Value="_value" Label="BA Number" Variant="Variant.Text"></MudTextField>
+                               
                                 
                             }
                         </MudCardContent>
@@ -39,13 +40,15 @@
                             else
                             {
                                 <MudStack AlignItems="AlignItems.Start" Style="height:450px">
-                                    <MudDateRangePicker @ref="_picker" PlaceholderStart="Start Date" PlaceholderEnd="End Date" Label="Range" PickerVariant="@PickerVariant.Inline" @bind-DateRange="@_dateRange" Margin="Margin.Dense">
+                                    @* <MudDateRangePicker @ref="_picker" PlaceholderStart="Start Date" PlaceholderEnd="End Date" Label="Range" PickerVariant="@PickerVariant.Inline" @bind-DateRange="@_dateRange" Margin="Margin.Dense">
                                         <PickerActions>
                                             <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.ClearAsync())">Clear</MudButton>
                                             <MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
                                             <MudButton Color="Color.Primary" OnClick="@(() => DateSelected())">Ok</MudButton>
                                         </PickerActions>
-                                    </MudDateRangePicker>
+                                    </MudDateRangePicker> *@
+                                    <SfDateRangePicker TValue="DateTime?" @bind-DateRange="@_dateRange" Placeholder="Choose a range" FullScreen="true" ShowClearButton="true"></SfDateRangePicker>
+
                                 </MudStack>
                             }
                         </MudCardContent>
@@ -129,7 +132,23 @@
         }
         else
         {
-            <MudDataGrid Items="@summery.LastWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter">
+            <SfGrid DataSource="@summery.LastWeekSummery.sections"
+                    AllowPaging="true"
+                    AllowSorting="true"
+                    AllowFiltering="true"
+                    AllowGrouping="true"
+                    Toolbar="@(new List<string>() { "Search" })">
+
+                <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
+
+                <GridColumns>
+                    <GridColumn Field="Section" HeaderText="Worked in" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+                    <GridColumn Field="TotalHours" HeaderText="Total Hours" TextAlign="TextAlign.Center" Format="N2" Width="120"></GridColumn>
+                   
+                </GridColumns>
+            </SfGrid>
+ 
+           @*  <MudDataGrid Items="@summery.LastWeekSummery.sections" SortMode="SortMode.Multiple" Filterable="true" Groupable="true" QuickFilter="@_quickFilter">
                 <ToolBarContent>
 
                     <MudSpacer />
@@ -144,7 +163,7 @@
                 <PagerContent>
                     <MudDataGridPager />
                 </PagerContent>
-            </MudDataGrid>
+            </MudDataGrid>  *@
         }
     </div>
 
@@ -154,7 +173,7 @@
 @code {
     private MudDateRangePicker _picker;
     private List<string> balist;
-    private DateRange _dateRange { get; set; }
+    private SfDateRangePicker<DateTime?> _dateRange { get; set; }
     private int _index = -1; //default value cannot be 0 -> first selectedindex is 0.
     private string _width = "100%";
     private string _height = "500px";
@@ -237,7 +256,7 @@
     }
     AggregateDefinition<SectionSummary> _calculatesum = new AggregateDefinition<SectionSummary>
         {
-            Type = AggregateType.Custom,
+            Type = MudBlazor.AggregateType.Custom,
             CustomAggregate = x =>
             {
                 var total = x.Sum(z => z.TotalHours);

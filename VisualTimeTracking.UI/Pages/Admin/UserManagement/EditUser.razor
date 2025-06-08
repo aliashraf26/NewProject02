@@ -59,7 +59,7 @@
     // private void Submit() => MudDialog.Close(DialogResult.Ok(viewModel));
 
     bool isShow;
-    InputType PasswordInput = InputType.Password;
+    MudBlazor.InputType PasswordInput = MudBlazor.InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
 
@@ -69,13 +69,13 @@
         {
             isShow = false;
             PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-            PasswordInput = InputType.Password;
+            PasswordInput = MudBlazor.InputType.Password;
         }
         else
         {
             isShow = true;
             PasswordInputIcon = Icons.Material.Filled.Visibility;
-            PasswordInput = InputType.Text;
+            PasswordInput = MudBlazor.InputType.Text;
         }
     }
 }

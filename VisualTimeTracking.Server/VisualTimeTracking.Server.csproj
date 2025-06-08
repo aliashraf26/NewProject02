@@ -10,6 +10,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+	  <PackageReference Include="Syncfusion.Blazor.Calendars" Version="29.1.33" />
+	  <PackageReference Include="Syncfusion.Blazor.Themes" Version="29.1.33" />
   </ItemGroup>
 
   <ItemGroup>

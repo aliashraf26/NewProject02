@@ -1,0 +1,34 @@
+﻿@using System.Linq
+@using MudBlazor
+@* <MudCard Class="my-2 p-2 text-center"> *@
+   @*  <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@FooterText</MudText>
+        </CardHeaderContent>
+    </MudCardHeader> 
+ <MudChart ChartType="ChartType.Donut" Width="300px" Height="300px" InputData="@InputData" InputLabels="@InputLabels">
+
+
+    <CustomGraphics>
+        <text class="donut-inner-text" x="47%" y="35%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="2">Total</text>
+        <text class="donut-inner-text" x="47%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="5">@InputData?.Sum().ToString()</text>
+    </CustomGraphics>
+    
+
+</MudChart> *@
+
+    @if(InputData.Length > 0)
+    {
+    <ApexPie Id="@Id" Categories="@InputLabels.ToList()" Data="@InputData.ToList()" Name="@FooterText" isCurrency="@isCurrency" showLegend="@showLegend" />
+    }
+@* </MudCard> *@
+
+@code {
+    [Parameter] public double[] InputData { get; set; } = Array.Empty<double>();
+    [Parameter] public string[] InputLabels { get; set; } = Array.Empty<string>();
+    [Parameter] public string FooterText { get; set; } = string.Empty;
+    [Parameter] public bool isCurrency { get; set; } = true;
+    [Parameter] public bool showLegend { get; set; } = false;
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+
+}
