@@ -1,0 +1,65 @@
+﻿@using Syncfusion.Blazor.Charts
+ <SfChart Title="@Title" SubTitle="@SubTitle" Width="@Width" Theme="@Theme.Bootstrap5">
+        <ChartTitleStyle TextOverflow="TextOverflow.Wrap"></ChartTitleStyle>
+        <ChartSubTitleStyle TextOverflow="TextOverflow.Wrap"></ChartSubTitleStyle>
+        <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
+        <ChartMargin Bottom="12"></ChartMargin>
+        <ChartEvents OnAxisLabelRender="AxisLabelRender"></ChartEvents>
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelIntersectAction="@LabelIntersectAction.Trim" LabelRotation="@Rotation">
+            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+            <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
+        </ChartPrimaryXAxis>
+        <ChartPrimaryYAxis Title="Metric Tons" Interval="40000">
+            <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
+            <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+        </ChartPrimaryYAxis>
+        <ChartSeriesCollection>
+            <ChartSeries DataSource="@ChartPoints" XName="Country" YName="Walnuts" Name="Walnuts" ColumnSpacing="0.4" Type="ChartSeriesType.Column" CornerRadius="@(new ChartCornerRadius { TopLeft = 4, TopRight = 4})" LegendShape="LegendShape.Rectangle">
+            </ChartSeries>
+            <ChartSeries DataSource="@ChartPoints" XName="Country" YName="Almonds" Name="Almonds" ColumnSpacing="0.4" Type="ChartSeriesType.Column" CornerRadius="@(new ChartCornerRadius { TopLeft = 4, TopRight = 4})" LegendShape="LegendShape.Rectangle">
+            </ChartSeries>
+        </ChartSeriesCollection>
+        <ChartLegendSettings Visible="true" EnableHighlight="true" ShapeWidth="9" ShapeHeight="9"></ChartLegendSettings>
+        <ChartTooltipSettings Enable="true" Header="<b>${point.x}</b>" EnableHighlight="true"></ChartTooltipSettings>
+    </SfChart>
+@code{
+    [Parameter,EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string SubTitle { get; set; } = string.Empty;
+
+    public string Width { get; set; } = "90%";
+
+    public double Rotation { get; set; } = 0;
+    public List<ColumnChartData> ChartPoints { get; set; } = new List<ColumnChartData>
+    {
+        new ColumnChartData { Country = "Chile", Walnuts = 175000, Almonds = 11300 },
+        new ColumnChartData { Country = "European Union", Walnuts = 140000, Almonds = 135000 },
+        new ColumnChartData { Country = "Turkey", Walnuts = 67000, Almonds = 24000 },
+        new ColumnChartData { Country = "India", Walnuts = 33000, Almonds = 4200 },
+        new ColumnChartData { Country = "Australia", Walnuts = 12000, Almonds = 154000 }
+    };
+    protected override void OnInitialized()
+    {
+    }
+    public class ColumnChartData
+    {
+        public string Country { get; set; }
+        public double Walnuts { get; set; }
+        public double Almonds { get; set; }
+    }
+    public void AxisLabelRender(AxisLabelRenderEventArgs args)
+    {
+        if (double.TryParse(args.Text.Replace(",", ""), out double value))
+        {
+            if (args.Value >= 1000)
+            {
+                args.Text = (value / 1000).ToString("0.#") + "K";
+            }
+        }
+    }
+    public void TooltipRender(TooltipRenderEventArgs args)
+    {
+        double pointYValue = Convert.ToDouble(args.Data.PointY);
+        string value = pointYValue.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
+        args.Text = $"{args.Data.SeriesName} : <b>{value}</b>";
+    }
+}

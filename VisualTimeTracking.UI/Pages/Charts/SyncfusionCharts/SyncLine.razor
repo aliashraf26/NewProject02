@@ -1,0 +1,110 @@
+﻿@using Syncfusion.Blazor.Charts
+<SfChart Title="Annual Crude Steel Production by Country (2016–2024)" SubTitle="Source: wikipedia.org" Width="90%">
+    <ChartTitleStyle TextOverflow="TextOverflow.Wrap" />
+    <ChartSubTitleStyle TextOverflow="TextOverflow.Wrap" />
+    <ChartArea>
+        <ChartAreaBorder Width="0" />
+    </ChartArea>
+    <ChartMargin Bottom="12" />
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime" EdgeLabelPlacement="EdgeLabelPlacement.Shift">
+        <ChartAxisMajorGridLines Width="0" />
+    </ChartPrimaryXAxis>
+    <ChartPrimaryYAxis Title="Volume in million metric tons" Minimum="0" Interval="5" Maximum="25" RangePadding="ChartRangePadding.None">
+        <ChartAxisLineStyle Width="0" />
+        <ChartAxisMajorTickLines Width="0" />
+    </ChartPrimaryYAxis>
+    <ChartTooltipSettings Enable="true" EnableHighlight="true" ShowNearestTooltip="true"
+                          Header="<b>${series.name}</b>" Format="${point.x} : <b>${point.y}M</b>" />
+    <ChartSeriesCollection>
+        <ChartSeries DataSource="@VietnamData" Name="Vietnam" XName="X" YName="Y" Type="ChartSeriesType.Spline" Width="2" Opacity="1">
+            <ChartMarker Visible="true" Width="7" Height="7" IsFilled="true" Shape="ChartShape.Circle" />
+        </ChartSeries>
+        <ChartSeries DataSource="@IndonesiaData" Name="Indonesia" XName="X" YName="Y" Type="ChartSeriesType.Spline" Width="2" Opacity="1">
+            <ChartMarker Visible="true" Width="6" Height="6" IsFilled="true" Shape="ChartShape.Triangle" />
+        </ChartSeries>
+        <ChartSeries DataSource="@FranceData" Name="France" XName="X" YName="Y" Type="ChartSeriesType.Spline" Width="2" Opacity="1">
+            <ChartMarker Visible="true" Width="7" Height="7" IsFilled="true" Shape="ChartShape.Diamond" />
+        </ChartSeries>
+        <ChartSeries DataSource="@PolandData" Name="Poland" XName="X" YName="Y" Type="ChartSeriesType.Spline" Width="2" Opacity="1">
+            <ChartMarker Visible="true" Width="5" Height="5" IsFilled="true" Shape="ChartShape.Rectangle" />
+        </ChartSeries>
+        <ChartSeries DataSource="@MexicoData" Name="Mexico" XName="X" YName="Y" Type="ChartSeriesType.Spline" Width="2" Opacity="1">
+            <ChartMarker Visible="true" Width="7" Height="7" IsFilled="true" Shape="ChartShape.Pentagon" />
+        </ChartSeries>
+    </ChartSeriesCollection>
+    <ChartLegendSettings EnableHighlight="true" />
+</SfChart>
+
+@code{
+    private Theme Theme { get; set; }
+    public string Width { get; set; } = "90%";
+    protected override void OnInitialized()
+    {
+        Theme = Theme.Bootstrap5;
+    }
+   public class ChartData
+    {
+        public DateTime X { get; set; }
+        public double Y { get; set; }
+    }
+    public List<ChartData> VietnamData = new List<ChartData>
+    {
+       new ChartData { X = new DateTime(2016, 01, 01), Y = 7.8 },
+       new ChartData { X = new DateTime(2017, 01, 01), Y = 10.3 },
+       new ChartData { X = new DateTime(2018, 01, 01), Y = 15.5 },
+       new ChartData { X = new DateTime(2019, 01, 01), Y = 17.5 },
+       new ChartData { X = new DateTime(2020, 01, 01), Y = 19.5 },
+       new ChartData { X = new DateTime(2021, 01, 01), Y = 23.0 },
+       new ChartData { X = new DateTime(2022, 01, 01), Y = 20.0 },
+       new ChartData { X = new DateTime(2023, 01, 01), Y = 19.0 },
+       new ChartData { X = new DateTime(2024, 01, 01), Y = 22.1 }
+    };
+    public List<ChartData> IndonesiaData = new List<ChartData>
+    {
+       new ChartData { X = new DateTime(2016, 01, 01), Y = 4.8 },
+       new ChartData { X = new DateTime(2017, 01, 01), Y = 5.2 },
+       new ChartData { X = new DateTime(2018, 01, 01), Y = 6.2 },
+       new ChartData { X = new DateTime(2019, 01, 01), Y = 7.8 },
+       new ChartData { X = new DateTime(2020, 01, 01), Y = 9.3 },
+       new ChartData { X = new DateTime(2021, 01, 01), Y = 14.3 },
+       new ChartData { X = new DateTime(2022, 01, 01), Y = 15.6 },
+       new ChartData { X = new DateTime(2023, 01, 01), Y = 16.0 },
+       new ChartData { X = new DateTime(2024, 01, 01), Y = 17.0 }
+    };
+    public List<ChartData> FranceData = new List<ChartData>
+    {
+       new ChartData { X = new DateTime(2016, 01, 01), Y = 14.6 },
+       new ChartData { X = new DateTime(2017, 01, 01), Y = 15.5 },
+       new ChartData { X = new DateTime(2018, 01, 01), Y = 15.4 },
+       new ChartData { X = new DateTime(2019, 01, 01), Y = 14.4 },
+       new ChartData { X = new DateTime(2020, 01, 01), Y = 11.6 },
+       new ChartData { X = new DateTime(2021, 01, 01), Y = 13.9 },
+       new ChartData { X = new DateTime(2022, 01, 01), Y = 12.1 },
+       new ChartData { X = new DateTime(2023, 01, 01), Y = 10.0 },
+       new ChartData { X = new DateTime(2024, 01, 01), Y = 10.8 }
+    };
+    public List<ChartData> PolandData = new List<ChartData>
+    {
+       new ChartData { X = new DateTime(2016, 01, 01), Y = 8.9 },
+       new ChartData { X = new DateTime(2017, 01, 01), Y = 10.3 },
+       new ChartData { X = new DateTime(2018, 01, 01), Y = 10.8 },
+       new ChartData { X = new DateTime(2019, 01, 01), Y = 9.0 },
+       new ChartData { X = new DateTime(2020, 01, 01), Y = 7.9 },
+       new ChartData { X = new DateTime(2021, 01, 01), Y = 8.5 },
+       new ChartData { X = new DateTime(2022, 01, 01), Y = 7.4 },
+       new ChartData { X = new DateTime(2023, 01, 01), Y = 6.4 },
+       new ChartData { X = new DateTime(2024, 01, 01), Y = 7.1 }
+    };
+    public List<ChartData> MexicoData = new List<ChartData>
+    {
+       new ChartData { X = new DateTime(2016, 01, 01), Y = 19.0 },
+       new ChartData { X = new DateTime(2017, 01, 01), Y = 20.0 },
+       new ChartData { X = new DateTime(2018, 01, 01), Y = 20.2 },
+       new ChartData { X = new DateTime(2019, 01, 01), Y = 18.4 },
+       new ChartData { X = new DateTime(2020, 01, 01), Y = 16.8 },
+       new ChartData { X = new DateTime(2021, 01, 01), Y = 18.5 },
+       new ChartData { X = new DateTime(2022, 01, 01), Y = 18.4 },
+       new ChartData { X = new DateTime(2023, 01, 01), Y = 16.3 },
+       new ChartData { X = new DateTime(2024, 01, 01), Y = 13.7 }
+    };
+}

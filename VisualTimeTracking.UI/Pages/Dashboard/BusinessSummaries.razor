@@ -290,6 +290,12 @@
         }
         else
         {
+            <div id="syncLineDiv">
+                <SyncLine></SyncLine>
+            </div>
+            <div id="syncBarDiv">
+                <SyncBar Title="xyz" SubTitle="xyz"></SyncBar>
+            </div>
                 <SfGrid @ref="@LwSEmpGrid" DataSource="@summery.LastWeekSummery.employees" AllowPaging="true" Toolbar="@(new List<string>() { "Search" })" AllowSorting="true" AllowFiltering="true" AllowGrouping="true">
                 
                 <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
@@ -369,7 +375,6 @@
         }
         else
         {
-
             <SfGrid DataSource="@summery.CurrentWeekSummery.employees"
                     AllowPaging="true"
                     AllowSorting="true"
